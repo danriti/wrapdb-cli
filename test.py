@@ -18,14 +18,14 @@ class WrapDBTest(unittest.TestCase):
     def test_create_project(self):
         response = project.create("Krapp")
         self.assertEqual(response.get('status'), 'success')
-        
+
     def test_create_objectdef(self):
         objectDef = {'data' : [{'name' : 'name', 'type' : 'string'},
                                {'name' : 'address', 'type' : 'string'}]}
 
-        response = objectdef.create('admin', 'business', objectDef)
+        response = objectdef.create('123Key', 'business', objectDef)
         self.assertEqual(response.get('status'), 'success')
-        
+
 # Get going test runner!
 if __name__ == '__main__':
     unittest.main()

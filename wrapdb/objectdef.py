@@ -7,8 +7,10 @@ from wrapdb import utils
 
 PROJECT_URL = '/objects/create'
 
-def create(username, objectDefName, objectDef):
+def create(apiKey, objectDefName, objectDef):
     data = json.dumps(objectDef)
-    url = utils.get_url(username + PROJECT_URL, 'name=' + objectDefName)
+    params = 'api_key=%s&name=%s' % (apiKey, objectDefName)
+    url = utils.get_url(PROJECT_URL, params)
+
     request = Request(url, data, {'Content-Type': 'application/json'})
     return json.load(urlopen(request))
