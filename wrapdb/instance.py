@@ -5,7 +5,7 @@ import simplejson as json
 
 from wrapdb import utils
 
-PROJECT_URL = '/%s/%s/insert'
+PROJECT_URL = '%s/%s/insert'
 
 def insert(apiKey, projectId, objectDefName, instanceData):
     data = json.dumps(instanceData)
