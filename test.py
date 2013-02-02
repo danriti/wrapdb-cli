@@ -1,7 +1,9 @@
 #!/usr/bin/python
 
 from urllib2 import urlopen
+import random
 import simplejson
+import string
 import unittest
 
 from wrapdb import instance, objectdef, project, utils
@@ -29,8 +31,12 @@ class WrapDBTest(unittest.TestCase):
         self.assertEqual(response.get('status'), 'success')
 
     def test_krapp(self):
+        # You can't have duplicate project names in WrapDB. So to make it easier
+        # to rerun tests, just generate a random project name.
+        projectName = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(6))
+
         # Create project.
-        response = project.create(API_KEY, "Krapp")
+        response = project.create(API_KEY, projectName)
         self.assertEqual(response.get('status'), 'success')
 
         # Grab the project id.
@@ -48,6 +54,20 @@ class WrapDBTest(unittest.TestCase):
         # Setup business object instance.
         instanceData = {'data' : {"name" : "McDonalds",
                                   "address" : "123 Happy Meal St"}}
+
+        # Fail insertion of object due to invalid project id.
+        response = instance.insert(API_KEY,
+                                   "invalid_project_id",
+                                   objectDefName,
+                                   instanceData)
+        self.assertEqual(response.get('status'), 'fail')
+
+        # Fail insertion of object due to invalid api key.
+        response = instance.insert("invalid_api_key",
+                                   projectId,
+                                   objectDefName,
+                                   instanceData)
+        self.assertEqual(response.get('status'), 'fail')
 
         # Insert a business object.
         response = instance.insert(API_KEY,
