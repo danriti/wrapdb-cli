@@ -7,6 +7,7 @@ from wrapdb import utils
 
 PROJECT_URL = 'projects/'
 
-def create(name):
-    url = utils.get_url('projects/create', 'name=' + name)
+def create(apiKey, projectName):
+    params = 'api_key=%s&name=%s' % (apiKey, projectName)
+    url = utils.get_url('projects/create', params)
     return simplejson.load(urlopen(url))
