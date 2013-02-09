@@ -42,11 +42,22 @@ class WrapDBTest(unittest.TestCase):
         self.assertTrue(len(projects) > 2)
 
     def test_create_objectdef(self):
-        objectDefData = {'data' : [{'name' : 'name', 'type' : 'string'},
-                                   {'name' : 'address', 'type' : 'string'}]}
+        objectDefData = {'data' : [{'name' : 'first_name', 'type' : 'string'},
+                                   {'name' : 'last_name', 'type' : 'string'}]}
 
-        response = objectdef.create(API_KEY, 'business', objectDefData)
+        response = objectdef.create(API_KEY, 'person', objectDefData)
         self.assertEqual(response.get('status'), 'success')
+
+    def test_get_objectdef(self):
+        objectDefData = {'data' : [{'name' : 'name', 'type' : 'string'},
+                                   {'name' : 'rating', 'type' : 'string'},
+                                   {'name' : 'cuisine', 'type' : 'string'}]}
+
+        response = objectdef.create(API_KEY, 'restaurant', objectDefData)
+        response = objectdef.get(API_KEY)
+        objects =  response.get('objects')
+        self.assertEqual(response.get('status'), 'success')
+        self.assertTrue(objects > 1)
 
     def test_krapp(self):
         # You can't have duplicate project names in WrapDB. So to make it easier
