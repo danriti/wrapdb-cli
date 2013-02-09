@@ -10,6 +10,11 @@ from wrapdb import instance, objectdef, project, utils
 
 API_KEY = '123Key'
 
+# Returns a randomly generated 6 character string.
+def get_random_project_name():
+    return ''.join(random.choice(string.ascii_uppercase + 
+                                 string.digits) for x in range(6)) 
+
 # Test Cases!
 class WrapDBTest(unittest.TestCase):
     def setUp(self):
@@ -20,8 +25,21 @@ class WrapDBTest(unittest.TestCase):
         self.assertEqual(response.get('status'), 'success')
 
     def test_create_project(self):
-        response = project.create(API_KEY, "Testing123")
+        response = project.create(API_KEY, get_random_project_name())
         self.assertEqual(response.get('status'), 'success')
+
+    def test_get_projects(self):
+        response = project.create(API_KEY, get_random_project_name())
+        response = project.create(API_KEY, get_random_project_name())
+
+        # Fail to get projects due to invalid api key.
+        response = project.get('invalid_key')
+        self.assertEqual(response.get('status'), 'fail')
+
+        response = project.get(API_KEY)
+        projects = response.get('projects')
+        self.assertEqual(response.get('status'), 'success')
+        self.assertTrue(len(projects) > 2)
 
     def test_create_objectdef(self):
         objectDefData = {'data' : [{'name' : 'name', 'type' : 'string'},
@@ -33,7 +51,7 @@ class WrapDBTest(unittest.TestCase):
     def test_krapp(self):
         # You can't have duplicate project names in WrapDB. So to make it easier
         # to rerun tests, just generate a random project name.
-        projectName = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(6))
+        projectName = get_random_project_name()
 
         # Create project.
         response = project.create(API_KEY, projectName)
