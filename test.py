@@ -6,12 +6,12 @@ import simplejson
 import string
 import unittest
 
-from wrapdb import instance, objectdef, project, utils
+from wrapdb import endpoint, instance, objectdef, project, utils
 
 API_KEY = '123Key'
 
 # Returns a randomly generated 6 character string.
-def get_random_project_name():
+def get_random_string():
     return ''.join(random.choice(string.ascii_uppercase + 
                                  string.digits) for x in range(6)) 
 
@@ -25,12 +25,12 @@ class WrapDBTest(unittest.TestCase):
         self.assertEqual(response.get('status'), 'success')
 
     def test_create_project(self):
-        response = project.create(API_KEY, get_random_project_name())
+        response = project.create(API_KEY, get_random_string())
         self.assertEqual(response.get('status'), 'success')
 
     def test_get_projects(self):
-        response = project.create(API_KEY, get_random_project_name())
-        response = project.create(API_KEY, get_random_project_name())
+        response = project.create(API_KEY, get_random_string())
+        response = project.create(API_KEY, get_random_string())
 
         # Fail to get projects due to invalid api key.
         response = project.get('invalid_key')
@@ -59,10 +59,38 @@ class WrapDBTest(unittest.TestCase):
         self.assertEqual(response.get('status'), 'success')
         self.assertTrue(objects > 1)
 
+    def test_create_endpoint(self):
+        response = project.create(API_KEY, get_random_string())
+        projectId = response.get('id')
+        endpointName = get_random_string()
+        endpointData = {'data' : [{                                       
+                                      "name" : "title",                  
+                                      "type" : "string",                 
+                                      "value" : "MyBathrooms"            
+                                  },
+                                  {                                       
+                                      "name" : "message",                  
+                                      "type" : "string",                 
+                                      "value" : "Hello world!"            
+                                  }]       
+                       }
+
+        # Fail due to invalid api key.
+        response = endpoint.create("invalid_key", projectId, endpointName, endpointData)
+        self.assertEqual(response.get('status'), 'fail')
+
+        # Fail due to invalid project id.
+        response = endpoint.create(API_KEY, "invalid_project", endpointName, endpointData)
+        self.assertEqual(response.get('status'), 'fail')
+
+        # Success!
+        response = endpoint.create(API_KEY, projectId, endpointName, endpointData)
+        self.assertEqual(response.get('status'), 'success')
+
     def test_krapp(self):
         # You can't have duplicate project names in WrapDB. So to make it easier
         # to rerun tests, just generate a random project name.
-        projectName = get_random_project_name()
+        projectName = get_random_string()
 
         # Create project.
         response = project.create(API_KEY, projectName)
