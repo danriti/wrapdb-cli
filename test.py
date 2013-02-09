@@ -59,33 +59,48 @@ class WrapDBTest(unittest.TestCase):
         self.assertEqual(response.get('status'), 'success')
         self.assertTrue(objects > 1)
 
-    def test_create_endpoint(self):
+    # Test create and get of endpoints.
+    def test_endpoints(self):
         response = project.create(API_KEY, get_random_string())
         projectId = response.get('id')
         endpointName = get_random_string()
         endpointData = {'data' : [{                                       
-                                      "name" : "title",                  
-                                      "type" : "string",                 
-                                      "value" : "MyBathrooms"            
+                                      'name' : 'title',                  
+                                      'type' : 'string',                 
+                                      'value' : 'MyBathrooms'            
                                   },
                                   {                                       
-                                      "name" : "message",                  
-                                      "type" : "string",                 
-                                      "value" : "Hello world!"            
+                                      'name' : 'message',                  
+                                      'type' : 'string',                 
+                                      'value' : 'Hello world!'            
                                   }]       
                        }
 
         # Fail due to invalid api key.
-        response = endpoint.create("invalid_key", projectId, endpointName, endpointData)
+        response = endpoint.create('invalid_key', projectId, endpointName, endpointData)
         self.assertEqual(response.get('status'), 'fail')
 
         # Fail due to invalid project id.
-        response = endpoint.create(API_KEY, "invalid_project", endpointName, endpointData)
+        response = endpoint.create(API_KEY, 'invalid_project', endpointName, endpointData)
         self.assertEqual(response.get('status'), 'fail')
 
-        # Success!
+        # Successfully create a project endpoint!
         response = endpoint.create(API_KEY, projectId, endpointName, endpointData)
         self.assertEqual(response.get('status'), 'success')
+
+        # Fail due to invalid api key.
+        response = endpoint.get('invalid_key', projectId)
+        self.assertEqual(response.get('status'), 'fail')
+
+        # Fail due to invalid project id.
+        response = endpoint.get(API_KEY, 'invalid_project')
+        self.assertEqual(response.get('status'), 'fail')
+
+        # Successfully get a list of endpoints.
+        response = endpoint.get(API_KEY, projectId)
+        endpoints = response.get('endpoints')
+        self.assertEqual(response.get('status'), 'success')
+        self.assertTrue(len(endpoints) > 0)
 
     def test_krapp(self):
         # You can't have duplicate project names in WrapDB. So to make it easier

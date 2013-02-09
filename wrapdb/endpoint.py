@@ -12,3 +12,8 @@ def create(apiKey, projectId, endpointName, endpointData):
 
     request = Request(url, data, {'Content-Type': 'application/json'})
     return json.load(urlopen(request))
+
+def get(apiKey, projectId):
+    params = 'api_key=%s' % (apiKey)
+    url = utils.get_url('%s/endpoints/get' % (projectId), params)
+    return json.load(urlopen(url))
