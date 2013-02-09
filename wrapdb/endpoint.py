@@ -17,3 +17,8 @@ def get(apiKey, projectId):
     params = 'api_key=%s' % (apiKey)
     url = utils.get_url('%s/endpoints/get' % (projectId), params)
     return json.load(urlopen(url))
+
+def render(apiKey, projectId, endpointName):
+    params = 'api_key=%s' % (apiKey)
+    url = utils.get_url('%s/%s' % (projectId, endpointName), params)
+    return json.load(urlopen(url))

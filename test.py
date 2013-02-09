@@ -61,13 +61,15 @@ class WrapDBTest(unittest.TestCase):
 
     # Test create and get of endpoints.
     def test_endpoints(self):
+        endpointName = 'Endpoint Name'
+
         response = project.create(API_KEY, get_random_string())
         projectId = response.get('id')
         endpointName = get_random_string()
         endpointData = {'data' : [{                                       
                                       'name' : 'title',                  
                                       'type' : 'string',                 
-                                      'value' : 'MyBathrooms'            
+                                      'value' : endpointName
                                   },
                                   {                                       
                                       'name' : 'message',                  
@@ -101,6 +103,23 @@ class WrapDBTest(unittest.TestCase):
         endpoints = response.get('endpoints')
         self.assertEqual(response.get('status'), 'success')
         self.assertTrue(len(endpoints) > 0)
+
+        # Fail due to invalid api key.
+        response = endpoint.render('invalid_key', projectId, endpointName)
+        self.assertEqual(response.get('status'), 'fail')
+
+        # Fail due to invalid project id.
+        response = endpoint.render(API_KEY, 'invalid_project', endpointName)
+        self.assertEqual(response.get('status'), 'fail')
+
+        # Fail due to invalid endpoint name.
+        response = endpoint.render(API_KEY, projectId, 'invalid_endpoint')
+        self.assertEqual(response.get('status'), 'fail')
+
+        # Successfully render an endpoint!
+        endpointName = endpoints[0].get('name')
+        response = endpoint.render(API_KEY, projectId, endpointName)
+        self.assertEqual(response.get('title'), endpointName)
 
     def test_krapp(self):
         # You can't have duplicate project names in WrapDB. So to make it easier
