@@ -5,12 +5,15 @@ import simplejson as json
 
 from wrapdb import utils
 
-PROJECT_URL = '/objects/create'
-
 def create(apiKey, objectDefName, objectDef):
     data = json.dumps(objectDef)
     params = 'api_key=%s&name=%s' % (apiKey, objectDefName)
-    url = utils.get_url(PROJECT_URL, params)
+    url = utils.get_url('objects/create', params)
 
     request = Request(url, data, {'Content-Type': 'application/json'})
     return json.load(urlopen(request))
+
+def get(apiKey):
+    params = 'api_key=%s' % (apiKey)
+    url = utils.get_url('objects/get', params)
+    return json.load(urlopen(url))
